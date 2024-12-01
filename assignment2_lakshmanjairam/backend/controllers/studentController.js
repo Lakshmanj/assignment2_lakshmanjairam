@@ -1,61 +1,55 @@
-const students = require('../data/studentData');
+const Student = require('../models/Student');
 
-let nextStudentId = students.length + 1;
-
-exports.getAllStudents = (req, res) => {
+exports.getAllStudents = async (req, res) => {
   try {
+    const students = await Student.find();
+    console.log('All Students Fetched:', students); // Debug log
     res.json(students);
   } catch (error) {
-    console.error(error);
+    console.error('Error fetching students:', error.message);
     res.status(500).json({ message: "Server Error" });
   }
 };
 
-exports.getStudentById = (req, res) => {
+exports.getStudentById = async (req, res) => {
   try {
-    const studentId = parseInt(req.params.id);
-    const student = students.find(s => s.id === studentId);
-    if (!student) return res.status(404).json({ message: "Student not found" });
-
-    const averageGrade = student.completedCourses.length
-      ? student.completedCourses.reduce((acc, grade) => acc + grade, 0) / student.completedCourses.length
-      : 0;
-    res.json({ ...student, averageGrade });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server Error" });
-  }
-};
-
-exports.addStudent = (req, res) => {
-  try {
-    const { name, department, semester, enrolledCourses, completedCourses } = req.body;
-    if (!name || !department) {
-      return res.status(400).json({ message: "Name and department are required" });
+    const student = await Student.findById(req.params.id).populate('enrolledCourses completedCourses');
+    if (!student) {
+      return res.status(404).json({ message: "Student not found" });
     }
+    console.log('Student Fetched:', student); // Debug log
+    res.json(student);
+  } catch (error) {
+    console.error('Error fetching student:', error.message);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
 
-    const newStudent = {
-      id: nextStudentId++,
-      name,
-      department,
-      semester,
-      enrolledCourses: enrolledCourses || [],
-      completedCourses: completedCourses || []
-    };
+exports.addStudent = async (req, res) => {
+  const student = new Student({
+    name: req.body.name,
+    department: req.body.department,
+    semester: req.body.semester,
+    enrolledCourses: req.body.enrolledCourses,
+    completedCourses: req.body.completedCourses,
+  });
 
-    students.push(newStudent);
+  try {
+    const newStudent = await student.save();
+    console.log('New Student Created:', newStudent); // Debug log
     res.status(201).json(newStudent);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server Error" });
+    console.error('Error creating student:', error.message);
+    res.status(400).json({ message: "Failed to create student" });
   }
 };
 
-exports.updateStudent = (req, res) => {
+exports.updateStudent = async (req, res) => {
   try {
-    const studentId = parseInt(req.params.id);
-    const student = students.find(s => s.id === studentId);
-    if (!student) return res.status(404).json({ message: "Student not found" });
+    const student = await Student.findById(req.params.id);
+    if (!student) {
+      return res.status(404).json({ message: "Student not found" });
+    }
 
     student.name = req.body.name || student.name;
     student.department = req.body.department || student.department;
@@ -63,23 +57,27 @@ exports.updateStudent = (req, res) => {
     student.enrolledCourses = req.body.enrolledCourses || student.enrolledCourses;
     student.completedCourses = req.body.completedCourses || student.completedCourses;
 
-    res.json(student);
+    const updatedStudent = await student.save();
+    console.log('Student Updated:', updatedStudent); // Debug log
+    res.json(updatedStudent);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server Error" });
+    console.error('Error updating student:', error.message);
+    res.status(400).json({ message: "Failed to update student" });
   }
 };
 
-exports.deleteStudent = (req, res) => {
+exports.deleteStudent = async (req, res) => {
   try {
-    const studentId = parseInt(req.params.id);
-    const index = students.findIndex(s => s.id === studentId);
-    if (index === -1) return res.status(404).json({ message: "Student not found" });
+    const student = await Student.findById(req.params.id);
+    if (!student) {
+      return res.status(404).json({ message: "Student not found" });
+    }
 
-    const deletedStudent = students.splice(index, 1);
-    res.json(deletedStudent[0]);
+    await student.remove();
+    console.log('Student Deleted:', student); // Debug log
+    res.json({ message: "Deleted student" });
   } catch (error) {
-    console.error(error);
+    console.error('Error deleting student:', error.message);
     res.status(500).json({ message: "Server Error" });
   }
 };

@@ -1,13 +1,11 @@
-class Student {
-    constructor(id, name, department, semester, enrolledCourses = [], completedCourses = []) {
-      this.id = id;
-      this.name = name;
-      this.department = department;
-      this.semester = semester;
-      this.enrolledCourses = enrolledCourses;
-      this.completedCourses = completedCourses;
-    }
-  }
-  
-  module.exports = Student;
-  
+const mongoose = require('mongoose');
+
+const StudentSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  department: { type: String, required: true },
+  semester: { type: Number, required: true },
+  enrolledCourses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }],
+  completedCourses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }],
+});
+
+module.exports = mongoose.model('Student', StudentSchema);
