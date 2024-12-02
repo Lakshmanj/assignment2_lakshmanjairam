@@ -3,7 +3,7 @@ const Course = require('../models/Course');
 exports.getAllCourses = async (req, res) => {
   try {
     const courses = await Course.find();
-    console.log('All Courses Fetched:', courses); // Debug log
+    console.log('All Courses Fetched:', courses); 
     res.status(200).json(courses);
   } catch (error) {
     console.error('Error fetching courses:', error.message);
@@ -17,7 +17,7 @@ exports.getCourseById = async (req, res) => {
     if (!course) {
       return res.status(404).json({ message: "Course not found" });
     }
-    console.log('Course Fetched:', course); // Debug log
+    console.log('Course Fetched:', course); 
     res.status(200).json(course);
   } catch (error) {
     console.error('Error fetching course:', error.message);
@@ -38,7 +38,7 @@ exports.addCourse = async (req, res) => {
     });
 
     const savedCourse = await newCourse.save();
-    console.log('New Course Created:', savedCourse); // Debug log
+    console.log('New Course Created:', savedCourse); 
     res.status(201).json(savedCourse);
   } catch (error) {
     console.error('Error creating course:', error.message);
@@ -58,7 +58,7 @@ exports.updateCourse = async (req, res) => {
     course.isOpen = req.body.isOpen !== undefined ? req.body.isOpen : course.isOpen;
 
     const updatedCourse = await course.save();
-    console.log('Course Updated:', updatedCourse); // Debug log
+    console.log('Course Updated:', updatedCourse); 
     res.status(200).json(updatedCourse);
   } catch (error) {
     console.error('Error updating course:', error.message);
@@ -74,7 +74,7 @@ exports.deleteCourse = async (req, res) => {
     }
 
     await course.remove();
-    console.log('Course Deleted:', course); // Debug log
+    console.log('Course Deleted:', course);
     res.status(200).json({ message: "Deleted course" });
   } catch (error) {
     console.error('Error deleting course:', error.message);

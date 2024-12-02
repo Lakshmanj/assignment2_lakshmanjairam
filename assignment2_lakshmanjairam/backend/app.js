@@ -41,13 +41,6 @@ app.use('/api/students', students);
 app.use('/api/courses', courses);
 app.use('/api/auth', authRoutes);
 
-app.use(express.static(path.join(__dirname, '../client/build')));
-
-
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
-});
-
 app.use((req, res) => {
   res.status(404).json({ message: "Not Found" });
 });

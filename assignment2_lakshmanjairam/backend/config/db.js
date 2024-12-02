@@ -9,23 +9,11 @@ const connectDB = async () => {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
-    console.log('MongoDB connected...');
+    console.log(`MongoDB connected to ${mongoose.connection.name} database`);
   } catch (err) {
-    console.error('MongoDB connection error:', err.message);
+    console.error('Error connecting to MongoDB:', err.message);
     process.exit(1);
   }
-
-  mongoose.connection.on('connected', () => {
-    console.log('Mongoose connected to DB');
-  });
-
-  mongoose.connection.on('error', (err) => {
-    console.error('Mongoose connection error:', err.message);
-  });
-
-  mongoose.connection.on('disconnected', () => {
-    console.log('Mongoose disconnected from DB');
-  });
 };
 
 module.exports = connectDB;

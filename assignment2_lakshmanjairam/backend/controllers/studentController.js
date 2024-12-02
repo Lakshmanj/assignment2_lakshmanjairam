@@ -2,8 +2,9 @@ const Student = require('../models/Student');
 
 exports.getAllStudents = async (req, res) => {
   try {
+    console.log('Attempting to fetch students from DB...');
     const students = await Student.find();
-    console.log('All Students Fetched:', students); // Debug log
+    console.log('Students fetched from DB:', students); 
     res.json(students);
   } catch (error) {
     console.error('Error fetching students:', error.message);
@@ -13,11 +14,13 @@ exports.getAllStudents = async (req, res) => {
 
 exports.getStudentById = async (req, res) => {
   try {
+    console.log(`Fetching student with ID: ${req.params.id}`);
     const student = await Student.findById(req.params.id).populate('enrolledCourses completedCourses');
     if (!student) {
+      console.log('Student not found');
       return res.status(404).json({ message: "Student not found" });
     }
-    console.log('Student Fetched:', student); // Debug log
+    console.log('Student Fetched:', student); 
     res.json(student);
   } catch (error) {
     console.error('Error fetching student:', error.message);
@@ -35,8 +38,9 @@ exports.addStudent = async (req, res) => {
   });
 
   try {
+    console.log('Adding new student to DB...');
     const newStudent = await student.save();
-    console.log('New Student Created:', newStudent); // Debug log
+    console.log('New Student Created:', newStudent);
     res.status(201).json(newStudent);
   } catch (error) {
     console.error('Error creating student:', error.message);
@@ -46,8 +50,10 @@ exports.addStudent = async (req, res) => {
 
 exports.updateStudent = async (req, res) => {
   try {
+    console.log(`Updating student with ID: ${req.params.id}`);
     const student = await Student.findById(req.params.id);
     if (!student) {
+      console.log('Student not found');
       return res.status(404).json({ message: "Student not found" });
     }
 
@@ -58,7 +64,7 @@ exports.updateStudent = async (req, res) => {
     student.completedCourses = req.body.completedCourses || student.completedCourses;
 
     const updatedStudent = await student.save();
-    console.log('Student Updated:', updatedStudent); // Debug log
+    console.log('Student Updated:', updatedStudent); 
     res.json(updatedStudent);
   } catch (error) {
     console.error('Error updating student:', error.message);
@@ -68,13 +74,15 @@ exports.updateStudent = async (req, res) => {
 
 exports.deleteStudent = async (req, res) => {
   try {
+    console.log(`Deleting student with ID: ${req.params.id}`);
     const student = await Student.findById(req.params.id);
     if (!student) {
+      console.log('Student not found');
       return res.status(404).json({ message: "Student not found" });
     }
 
     await student.remove();
-    console.log('Student Deleted:', student); // Debug log
+    console.log('Student Deleted:', student); 
     res.json({ message: "Deleted student" });
   } catch (error) {
     console.error('Error deleting student:', error.message);
